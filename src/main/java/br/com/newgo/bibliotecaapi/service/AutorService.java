@@ -6,6 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.UUID;
+
 
 @Service
 public class AutorService {
@@ -17,5 +20,9 @@ public class AutorService {
 
     public Page<Autor> listarTodos(Pageable pageable){
         return autorRepository.findAll(pageable);
+    }
+
+    public Optional<Autor> listarPorId(UUID id){
+        return autorRepository.findById(id);
     }
 }
