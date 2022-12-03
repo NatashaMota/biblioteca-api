@@ -5,25 +5,24 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "aut_autores")
-public class Autor implements Serializable {
+@Table(name = "idiomas")
+public class Idioma implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, unique = true, length = 30)
     private String nome;
-    @Column(nullable = false, length = 120)
-    private String sobrenome;
-    private Date dataNascimento;
-    @ManyToOne
-    private Nacionalidade nacionalidade;
+
+    @OneToMany
+    private List<Livro> livros;
+
 
 }
