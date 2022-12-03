@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -29,4 +31,6 @@ public class Livro implements Serializable {
     @ManyToOne
     private Idioma idioma;
 
+    @ManyToMany(mappedBy = "livros")
+    private Set<Autor> autores;
 }
