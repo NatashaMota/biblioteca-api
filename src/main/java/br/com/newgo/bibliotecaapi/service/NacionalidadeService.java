@@ -27,4 +27,11 @@ public class NacionalidadeService {
     public Nacionalidade salvar(Nacionalidade nacionalidade){
         return nacionalidadeRepository.save(nacionalidade);
     }
+
+    @Transactional
+    public Nacionalidade salvarPorNome(String nome){
+        Nacionalidade novaNacionalidade = new Nacionalidade();
+        novaNacionalidade.setNome(nome);
+        return salvar(novaNacionalidade);
+    }
 }

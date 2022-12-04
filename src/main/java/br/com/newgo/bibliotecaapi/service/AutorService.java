@@ -31,8 +31,13 @@ public class AutorService {
         return autorRepository.save(autor);
     }
 
+    @Transactional
     public void excluir(Autor autor){
         autorRepository.delete(autor);
+    }
+
+    public Autor alterar(Autor autor){
+        return autorRepository.save(autor);
     }
 
 }

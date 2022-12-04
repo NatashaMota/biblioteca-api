@@ -47,17 +47,20 @@ public class AutorController {
 
     @PostMapping
     public ResponseEntity<Object> registrar(@RequestBody @Valid AutorDto autorDto){
-        if(!nacionalidadeService.existePorNome(autorDto.getNacionalidade())
-                && !Objects.equals(autorDto.getNacionalidade(), "") && autorDto.getNacionalidade() != null){
-            Nacionalidade novaNacionalidade = new Nacionalidade();
-            novaNacionalidade.setNome(autorDto.getNacionalidade());
-            nacionalidadeService.salvar(novaNacionalidade);
-        }
         Autor autor = new Autor();
         BeanUtils.copyProperties(autorDto, autor, "nacionalidade");
-        Optional<Nacionalidade> nacionalidade = nacionalidadeService.acharPorNome(autorDto.getNacionalidade());
-        if(nacionalidade.isPresent()){
-            autor.setNacionalidade(nacionalidade.get());
+
+        Optional<Nacionalidade> nacionalidadeBD = nacionalidadeService.acharPorNome(autorDto.getNacionalidade());
+        if(nacionalidadeBD.isEmpty()){
+            if(Objects.equals(autorDto.getNacionalidade(), "")) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Nacionalidade invalida.");
+            }
+            if(autorDto.getNacionalidade() != null){
+                Nacionalidade novaNacionalidade = nacionalidadeService.salvarPorNome(autorDto.getNacionalidade());
+                autor.setNacionalidade(novaNacionalidade);
+            }
+        } else{
+            autor.setNacionalidade(nacionalidadeBD.get());
         }
         autorService.salvar(autor);
         return ResponseEntity.status(HttpStatus.CREATED).body(autorDto);
@@ -72,4 +75,34 @@ public class AutorController {
         autorService.excluir(autor.get());
         return ResponseEntity.status(HttpStatus.OK).body("Autor excluido com sucesso.");
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> alterar(@PathVariable UUID id, @RequestBody @Valid AutorDto autorDto){
+        Optional<Autor> autorBD = autorService.listarPorId(id);
+        if(!autorBD.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Autor não encontrado.");
+        }
+        Autor autor = new Autor();
+        BeanUtils.copyProperties(autorDto, autor, "nacionalidade");
+        autor.setId(autorBD.get().getId());
+        autor = setNacionalidade(autor, autorDto.getNacionalidade());
+        autorService.salvar(autor);
+        return ResponseEntity.status(HttpStatus.OK).body(autor);
+    }
+
+    private Autor setNacionalidade(Autor autor, String nacionalidade){
+        if(nacionalidade == null || Objects.equals(nacionalidade, "")) {
+            return autor;
+        }
+
+        Optional<Nacionalidade> nacionalidadeBD = nacionalidadeService.acharPorNome(nacionalidade);
+        if(nacionalidadeBD.isPresent()){
+            autor.setNacionalidade(nacionalidadeBD.get());
+            return autor;
+        }
+        Nacionalidade novaNacionalidade = nacionalidadeService.salvarPorNome(nacionalidade);
+        autor.setNacionalidade(novaNacionalidade);
+        return autor;
+    }
+
 }
