@@ -31,4 +31,8 @@ public class AutorService {
         return autorRepository.save(autor);
     }
 
+    public void excluir(Autor autor){
+        autorRepository.delete(autor);
+    }
+
 }

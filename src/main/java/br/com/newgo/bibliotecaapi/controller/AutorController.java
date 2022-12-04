@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,7 +48,7 @@ public class AutorController {
     @PostMapping
     public ResponseEntity<Object> registrar(@RequestBody @Valid AutorDto autorDto){
         if(!nacionalidadeService.existePorNome(autorDto.getNacionalidade())
-                && autorDto.getNacionalidade() != "" && autorDto.getNacionalidade() != null){
+                && !Objects.equals(autorDto.getNacionalidade(), "") && autorDto.getNacionalidade() != null){
             Nacionalidade novaNacionalidade = new Nacionalidade();
             novaNacionalidade.setNome(autorDto.getNacionalidade());
             nacionalidadeService.salvar(novaNacionalidade);
@@ -62,4 +63,13 @@ public class AutorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(autorDto);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> excluir(@PathVariable(value = "id") UUID id){
+        Optional<Autor> autor = autorService.listarPorId(id);
+        if(!autor.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Autor não encontrado.");
+        }
+        autorService.excluir(autor.get());
+        return ResponseEntity.status(HttpStatus.OK).body("Autor excluido com sucesso.");
+    }
 }
