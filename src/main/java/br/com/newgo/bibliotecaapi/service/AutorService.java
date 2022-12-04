@@ -2,13 +2,13 @@ package br.com.newgo.bibliotecaapi.service;
 
 import br.com.newgo.bibliotecaapi.model.Autor;
 import br.com.newgo.bibliotecaapi.repository.AutorRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
-
 
 @Service
 public class AutorService {
@@ -25,4 +25,10 @@ public class AutorService {
     public Optional<Autor> listarPorId(UUID id){
         return autorRepository.findById(id);
     }
+
+    @Transactional
+    public Autor salvar(Autor autor){
+        return autorRepository.save(autor);
+    }
+
 }

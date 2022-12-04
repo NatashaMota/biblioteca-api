@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Data
 public class AutorDto {
@@ -17,5 +16,6 @@ public class AutorDto {
     @Size(max=120)
     private String sobrenome;
     private Date dataNascimento;
-    private UUID idNascionalidade;
+    @Size(max=30)
+    private String nacionalidade;
 }

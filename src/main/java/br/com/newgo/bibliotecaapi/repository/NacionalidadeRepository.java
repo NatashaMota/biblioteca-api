@@ -8,4 +8,6 @@ import java.util.UUID;
 
 @Repository
 public interface NacionalidadeRepository extends JpaRepository<Nacionalidade, UUID> {
+    Nacionalidade findByNome(String nome);
+    boolean existsByNome(String nome);
 }
