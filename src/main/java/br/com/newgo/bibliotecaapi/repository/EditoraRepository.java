@@ -8,4 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface EditoraRepository extends JpaRepository<Editora, UUID> {
+    public Editora findByNome(String nome);
 }

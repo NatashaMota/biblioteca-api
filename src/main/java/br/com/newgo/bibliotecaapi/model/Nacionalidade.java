@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -22,5 +22,5 @@ public class Nacionalidade implements Serializable {
     private String nome;
 
     @OneToMany
-    private List<Autor> autores;
+    private Set<Autor> autores;
 }

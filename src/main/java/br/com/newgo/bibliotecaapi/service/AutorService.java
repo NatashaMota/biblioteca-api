@@ -7,7 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -36,8 +38,19 @@ public class AutorService {
         autorRepository.delete(autor);
     }
 
-    public Autor alterar(Autor autor){
-        return autorRepository.save(autor);
+    public boolean existePorId(UUID id){
+        return autorRepository.existsById(id);
+    }
+
+    public Set<Autor> autoresPorId(Set<UUID> autoresId){
+        Set<Autor> autores = new HashSet<>();
+        for (UUID idAutor: autoresId){
+            Optional<Autor> autorOptional = listarPorId(idAutor);
+            if(autorOptional.isPresent()){
+                autores.add(autorOptional.get());
+            }
+        }
+        return autores;
     }
 
 }

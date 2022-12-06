@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,7 +21,7 @@ public class Livro implements Serializable {
     private UUID id;
     @Column(nullable = false)
     private String titulo;
-    @Column(length = 10, unique = true)
+    @Column(nullable = false ,length = 10, unique = true)
     private String isbn10;
     @Column(length = 13, unique = true)
     private String isbn13;
@@ -30,6 +31,8 @@ public class Livro implements Serializable {
     @ManyToOne
     private Idioma idioma;
 
-    @ManyToMany(mappedBy = "livros")
-    private Set<Autor> autores;
+    @ManyToMany
+    @JoinTable(name = "autor_livro", joinColumns = @JoinColumn(name = "livro_id"),
+            inverseJoinColumns = @JoinColumn(name = "autor_id"))
+    private Set<Autor> autores = new HashSet<>();
 }

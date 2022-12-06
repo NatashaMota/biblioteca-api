@@ -8,4 +8,7 @@ import java.util.UUID;
 
 @Repository
 public interface IdiomaRepository extends JpaRepository<Idioma, UUID> {
+
+    Idioma findByNome(String nome);
+
 }
