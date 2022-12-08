@@ -1,16 +1,15 @@
 package br.com.newgo.bibliotecaapi.service;
 
 import br.com.newgo.bibliotecaapi.model.Autor;
+import br.com.newgo.bibliotecaapi.model.Livro;
 import br.com.newgo.bibliotecaapi.repository.AutorRepository;
 import jakarta.transaction.Transactional;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AutorService {
@@ -42,7 +41,7 @@ public class AutorService {
         return autorRepository.existsById(id);
     }
 
-    public Set<Autor> autoresPorId(Set<UUID> autoresId){
+    public Set<Autor> autoresPorId(@NotNull Set<UUID> autoresId){
         Set<Autor> autores = new HashSet<>();
         for (UUID idAutor: autoresId){
             Optional<Autor> autorOptional = listarPorId(idAutor);

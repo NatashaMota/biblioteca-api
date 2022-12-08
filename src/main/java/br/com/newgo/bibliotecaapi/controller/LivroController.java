@@ -10,6 +10,7 @@ import br.com.newgo.bibliotecaapi.service.EditoraService;
 import br.com.newgo.bibliotecaapi.service.IdiomaService;
 import br.com.newgo.bibliotecaapi.service.LivroService;
 import jakarta.validation.Valid;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/livro")
@@ -55,7 +53,7 @@ public class LivroController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro nao encontrado.");
         }
         Livro livro = livroOptional.get();
-       return ResponseEntity.status(HttpStatus.OK).body(livro);
+        return ResponseEntity.status(HttpStatus.OK).body(livro);
     }
 
     @GetMapping("/autor/{id}")
@@ -66,24 +64,29 @@ public class LivroController {
         }
         Optional<Autor> autorOptional = autorService.listarPorId(id);
         Optional<List<Livro>> livroOptional = livroService.acharPorAutor(autorOptional.get());
-        if(!livroOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum livro encontrado");
-        }
-        return ResponseEntity.status(HttpStatus.FOUND).body(livroOptional.get());
+        return livroOptional.<ResponseEntity<Object>>map(livros -> ResponseEntity.status(HttpStatus.FOUND).body(livros)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum livro encontrado"));
     }
 
     @PostMapping
-    public ResponseEntity<Object> registrar(@RequestBody @Valid LivroDto livroDto){
+    public ResponseEntity<Object> registrar(@RequestBody @Valid @NotNull LivroDto livroDto){
         if(livroService.existerPorIsbn10(livroDto.getIsbn10())){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ISBN10 já cadastrado.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("ISBN10 já cadastrado.");
         }
         if(livroService.existerPorIsbn13(livroDto.getIsbn13())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("ISBN13 já cadastrado.");
         }
+        if(livroDto.getAutores().isEmpty()){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Livro precisa ter autor");
+        }
+
         for(UUID autor: livroDto.getAutores()){
-            if(!autorService.existePorId(autor)){
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Autor não encontrado.");
+            if(Objects.equals(autor, "") || autor == null){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Livro precisa ter autor");
             }
+            if(!autorService.existePorId(autor)){
+                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Autor não encontrado.");
+            }
+
         }
 
         Livro novoLivro = new Livro();
@@ -92,15 +95,10 @@ public class LivroController {
         novoLivro = setEditora(novoLivro, livroDto.getEditora());
         novoLivro = setIdioma(novoLivro, livroDto.getIdioma());
 
-        Set<Autor> autores = autorService.autoresPorId(livroDto.getAutores());
-        for(Autor autor : autores){
-          autor.getLivros().add(novoLivro);
-            autorService.salvar(autor);
-        }
 
+        Set<Autor> autores = autorService.autoresPorId(livroDto.getAutores());
         novoLivro.setAutores(autores);
         livroService.salvar(novoLivro);
-
         return ResponseEntity.status(HttpStatus.OK).body(novoLivro);
     }
 
