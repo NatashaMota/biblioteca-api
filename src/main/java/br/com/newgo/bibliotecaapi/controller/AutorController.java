@@ -53,7 +53,7 @@ public class AutorController {
         Optional<Nacionalidade> nacionalidadeBD = nacionalidadeService.acharPorNome(autorDto.getNacionalidade());
         if(nacionalidadeBD.isEmpty()){
             if(Objects.equals(autorDto.getNacionalidade(), "")) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Nacionalidade invalida.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nacionalidade invalida.");
             }
             if(autorDto.getNacionalidade() != null){
                 Nacionalidade novaNacionalidade = nacionalidadeService.salvarPorNome(autorDto.getNacionalidade());

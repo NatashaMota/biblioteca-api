@@ -64,7 +64,7 @@ public class LivroController {
         }
         Optional<Autor> autorOptional = autorService.listarPorId(id);
         Optional<List<Livro>> livroOptional = livroService.acharPorAutor(autorOptional.get());
-        return livroOptional.<ResponseEntity<Object>>map(livros -> ResponseEntity.status(HttpStatus.FOUND).body(livros)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum livro encontrado"));
+        return livroOptional.<ResponseEntity<Object>>map(livros -> ResponseEntity.status(HttpStatus.OK).body(livros)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum livro encontrado"));
     }
 
     @PostMapping
@@ -76,15 +76,15 @@ public class LivroController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("ISBN13 já cadastrado.");
         }
         if(livroDto.getAutores().isEmpty()){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Livro precisa ter autor");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Livro precisa ter autor");
         }
 
         for(UUID autor: livroDto.getAutores()){
             if(Objects.equals(autor, "") || autor == null){
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Livro precisa ter autor");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Livro precisa ter autor");
             }
             if(!autorService.existePorId(autor)){
-                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Autor não encontrado.");
+                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Autor não encontrado.");
             }
 
         }
@@ -99,7 +99,7 @@ public class LivroController {
         Set<Autor> autores = autorService.autoresPorId(livroDto.getAutores());
         novoLivro.setAutores(autores);
         livroService.salvar(novoLivro);
-        return ResponseEntity.status(HttpStatus.OK).body(novoLivro);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoLivro);
     }
 
     @DeleteMapping("/{id}")
