@@ -7,13 +7,11 @@ import br.com.newgo.bibliotecaapi.service.AutorService;
 import br.com.newgo.bibliotecaapi.service.NacionalidadeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,9 +45,10 @@ public class AutorController {
     @PostMapping
     public ResponseEntity<Object> registrar(@RequestBody @Valid AutorDto autorDto){
         Autor autor = new Autor();
-        BeanUtils.copyProperties(autorDto, autor, "nacionalidade");
-
+        BeanUtils.copyProperties(autorDto, autor, "nacionalidade", "dataNascimento");
         Optional<Nacionalidade> nacionalidadeBD = nacionalidadeService.acharPorNome(autorDto.getNacionalidade());
+
+        autor.setDataNascimento(autorDto.getDataNascimento());
         if(nacionalidadeBD.isEmpty()){
             if(Objects.equals(autorDto.getNacionalidade(), "")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nacionalidade invalida.");
@@ -61,6 +60,7 @@ public class AutorController {
         } else{
             autor.setNacionalidade(nacionalidadeBD.get());
         }
+
         autorService.salvar(autor);
         return ResponseEntity.status(HttpStatus.CREATED).body(autorDto);
     }

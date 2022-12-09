@@ -113,6 +113,14 @@ public class Livro implements Serializable {
         this.autores = autores;
     }
 
+    public Set<UUID> getAutoresUUID(){
+        Set<UUID> uuids = new HashSet<>();
+        for(Autor autor: this.getAutores()){
+            uuids.add(autor.getId());
+        }
+        return uuids;
+    }
+
     @Override
     public String toString() {
         return "Livro{" +

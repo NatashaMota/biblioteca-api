@@ -1,12 +1,9 @@
 package br.com.newgo.bibliotecaapi.service;
 
 import br.com.newgo.bibliotecaapi.model.Autor;
-import br.com.newgo.bibliotecaapi.model.Livro;
 import br.com.newgo.bibliotecaapi.repository.AutorRepository;
 import jakarta.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

@@ -1,6 +1,7 @@
 package br.com.newgo.bibliotecaapi.controller;
 
 import br.com.newgo.bibliotecaapi.dto.LivroDto;
+import br.com.newgo.bibliotecaapi.dto.LivroDtoOutput;
 import br.com.newgo.bibliotecaapi.model.Autor;
 import br.com.newgo.bibliotecaapi.model.Editora;
 import br.com.newgo.bibliotecaapi.model.Idioma;
@@ -12,10 +13,6 @@ import br.com.newgo.bibliotecaapi.service.LivroService;
 import jakarta.validation.Valid;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,8 +38,12 @@ public class LivroController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Livro>> listarLivros(){
-        return ResponseEntity.status(HttpStatus.OK).body(livroService.listarLivros());
+    public ResponseEntity<List<LivroDtoOutput>> listarLivros(){
+        List<LivroDtoOutput> livros = new ArrayList<>();
+        for(Livro livro: livroService.listarLivros()){
+            livros.add(new LivroDtoOutput(livro));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(livros);
     }
 
     @GetMapping("/{id}")
@@ -51,8 +52,8 @@ public class LivroController {
         if(livroOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro nao encontrado.");
         }
-        Livro livro = livroOptional.get();
-        return ResponseEntity.status(HttpStatus.OK).body(livro);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new LivroDtoOutput(livroOptional.get()));
     }
 
     @GetMapping("/autor/{id}")
@@ -63,7 +64,13 @@ public class LivroController {
         }
         Optional<Autor> autorOptional = autorService.listarPorId(id);
         Optional<List<Livro>> livroOptional = livroService.acharPorAutor(autorOptional.get());
-        return livroOptional.<ResponseEntity<Object>>map(livros -> ResponseEntity.status(HttpStatus.OK).body(livros)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum livro encontrado"));
+
+        List<LivroDtoOutput> livroDtoOutputs = new ArrayList<>();
+        for(Livro livro: livroService.listarLivros()){
+            livroDtoOutputs.add(new LivroDtoOutput(livro));
+        }
+
+        return livroOptional.<ResponseEntity<Object>>map(livros -> ResponseEntity.status(HttpStatus.OK).body(livroDtoOutputs)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum livro encontrado"));
     }
 
     @PostMapping
@@ -98,7 +105,7 @@ public class LivroController {
         Set<Autor> autores = autorService.autoresPorId(livroDto.getAutores());
         novoLivro.setAutores(autores);
         livroService.salvar(novoLivro);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoLivro);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new LivroDtoOutput(novoLivro));
     }
 
     @DeleteMapping("/{id}")
@@ -127,7 +134,7 @@ public class LivroController {
 
 
         livroService.salvar(livroAlterado);
-        return ResponseEntity.status(HttpStatus.OK).body("Livro alterado com sucesso.");
+        return ResponseEntity.status(HttpStatus.OK).body(new LivroDtoOutput(livroAlterado));
 
     }
 

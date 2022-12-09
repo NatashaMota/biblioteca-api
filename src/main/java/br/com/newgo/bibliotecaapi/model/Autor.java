@@ -1,9 +1,6 @@
 package br.com.newgo.bibliotecaapi.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -93,6 +90,8 @@ public class Autor implements Serializable {
     public void setLivros(Set<Livro> livros) {
         this.livros = livros;
     }
+
+
 
     @Override
     public String toString() {

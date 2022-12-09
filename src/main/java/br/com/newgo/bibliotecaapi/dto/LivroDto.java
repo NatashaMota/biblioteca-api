@@ -1,11 +1,10 @@
 package br.com.newgo.bibliotecaapi.dto;
 
+import br.com.newgo.bibliotecaapi.model.Livro;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,13 +29,13 @@ public class LivroDto {
     public LivroDto() {
     }
 
-    public LivroDto(String titulo, String isbn10, String isbn13, String editora, String idioma, Set<UUID> autores) {
-        this.titulo = titulo;
-        this.isbn10 = isbn10;
-        this.isbn13 = isbn13;
-        this.editora = editora;
-        this.idioma = idioma;
-        this.autores = autores;
+    public LivroDto(Livro livro) {
+        this.titulo = livro.getTitulo();
+        this.isbn10 = livro.getIsbn10();
+        this.isbn13 = livro.getIsbn13();
+        this.editora = livro.getEditora().getNome();
+        this.idioma = livro.getIdioma().getNome();
+        this.autores = livro.getAutoresUUID();
     }
 
     public String getTitulo() {
