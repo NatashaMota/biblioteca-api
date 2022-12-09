@@ -41,9 +41,8 @@ public class LivroController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Livro>> listarLivros(
-            @PageableDefault(page = 0, size = 10, sort = "titulo", direction = Sort.Direction.ASC) Pageable pageable){
-        return ResponseEntity.status(HttpStatus.OK).body(livroService.listarLivros(pageable));
+    public ResponseEntity<List<Livro>> listarLivros(){
+        return ResponseEntity.status(HttpStatus.OK).body(livroService.listarLivros());
     }
 
     @GetMapping("/{id}")

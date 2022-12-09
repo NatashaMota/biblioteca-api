@@ -20,8 +20,8 @@ public class LivroService {
         this.livroRepository = livroRepository;
     }
 
-    public Page<Livro> listarLivros(Pageable pageable){
-        return livroRepository.findAll(pageable);
+    public List<Livro> listarLivros(){
+        return livroRepository.findAll();
     }
 
     @Transactional
