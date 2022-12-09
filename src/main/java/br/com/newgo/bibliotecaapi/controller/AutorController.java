@@ -1,6 +1,7 @@
 package br.com.newgo.bibliotecaapi.controller;
 
 import br.com.newgo.bibliotecaapi.dto.AutorDto;
+import br.com.newgo.bibliotecaapi.dto.AutorDtoOutput;
 import br.com.newgo.bibliotecaapi.model.Autor;
 import br.com.newgo.bibliotecaapi.model.Nacionalidade;
 import br.com.newgo.bibliotecaapi.service.AutorService;
@@ -12,9 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/autor")
@@ -30,7 +29,11 @@ public class AutorController {
 
     @GetMapping
     public ResponseEntity<Object> listarTodos(){
-        return ResponseEntity.status(HttpStatus.OK).body(autorService.listarTodos());
+        List<AutorDtoOutput> autores = new ArrayList<>();
+        for(Autor autor: autorService.listarTodos()){
+            autores.add(new AutorDtoOutput(autor));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(autores);
     }
 
     @GetMapping("/{id}")
@@ -39,7 +42,7 @@ public class AutorController {
         if(!autorOptional.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Autor não encontrado!");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(autorOptional.get());
+        return ResponseEntity.status(HttpStatus.OK).body(new AutorDtoOutput(autorOptional.get()));
     }
 
     @PostMapping
@@ -62,7 +65,7 @@ public class AutorController {
         }
 
         autorService.salvar(autor);
-        return ResponseEntity.status(HttpStatus.CREATED).body(autorDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AutorDtoOutput(autor));
     }
 
     @DeleteMapping("/{id}")
@@ -86,7 +89,7 @@ public class AutorController {
         autor.setId(autorBD.get().getId());
         autor = setNacionalidade(autor, autorDto.getNacionalidade());
         autorService.salvar(autor);
-        return ResponseEntity.status(HttpStatus.OK).body(autor);
+        return ResponseEntity.status(HttpStatus.OK).body(new AutorDtoOutput(autor));
     }
 
     private Autor setNacionalidade(Autor autor, String nacionalidade){
