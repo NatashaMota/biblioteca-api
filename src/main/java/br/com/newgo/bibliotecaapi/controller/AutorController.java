@@ -31,9 +31,8 @@ public class AutorController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> listarTodos(
-            @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable){
-        return ResponseEntity.status(HttpStatus.OK).body(autorService.listarTodos(pageable));
+    public ResponseEntity<Object> listarTodos(){
+        return ResponseEntity.status(HttpStatus.OK).body(autorService.listarTodos());
     }
 
     @GetMapping("/{id}")

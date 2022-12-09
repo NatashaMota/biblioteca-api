@@ -19,8 +19,8 @@ public class AutorService {
         this.autorRepository = autorRepository;
     }
 
-    public Page<Autor> listarTodos(Pageable pageable){
-        return autorRepository.findAll(pageable);
+    public List<Autor> listarTodos( ){
+        return autorRepository.findAll();
     }
 
     public Optional<Autor> listarPorId(UUID id){
